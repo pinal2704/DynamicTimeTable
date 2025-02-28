@@ -12,7 +12,7 @@ namespace DynamicTimeTable.Controllers
 
         public TimetableGeneratorController(TimeTableContext context)
         {
-            _context = context;
+            _context = context; 
         }
 
         public IActionResult Index()
