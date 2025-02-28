@@ -1,0 +1,84 @@
+﻿@model DynamicTimeTable.Models.TimetableGeneratorModels
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Dynamic Timetable Generator</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="SubjectHours" method="post" id="timetableForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="form-group mb-3">
+                            <label asp-for="WorkingDays" class="control-label"></label>
+                            <input asp-for="WorkingDays" class="form-control input-field" />
+                            <span asp-validation-for="WorkingDays" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label asp-for="SubjectsPerDay" class="control-label"></label>
+                            <input asp-for="SubjectsPerDay" class="form-control input-field" />
+                            <span asp-validation-for="SubjectsPerDay" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label asp-for="TotalSubjects" class="control-label"></label>
+                            <input asp-for="TotalSubjects" class="form-control input-field" />
+                            <span asp-validation-for="TotalSubjects" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="control-label">Total Hours for Week</label>
+                            <input id="totalHours" class="form-control" readonly value="@Model.TotalHoursForWeek" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Continue</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const workingDaysInput = document.querySelector('input[name="WorkingDays"]');
+            const subjectsPerDayInput = document.querySelector('input[name="SubjectsPerDay"]');
+            const totalHoursElement = document.getElementById('totalHours');
+            const submitButton = document.getElementById('submitBtn');
+            
+            function updateTotalHours() {
+                const workingDays = parseInt(workingDaysInput.value) || 0;
+                const subjectsPerDay = parseInt(subjectsPerDayInput.value) || 0;
+                
+                const totalHours = workingDays * subjectsPerDay;
+                totalHoursElement.value = totalHours;
+                
+                // Enable submit button if all fields have valid values
+                const totalSubjects = parseInt(document.querySelector('input[name="TotalSubjects"]').value) || 0;
+                
+                if (workingDays >= 1 && workingDays <= 7 && 
+                    subjectsPerDay >= 1 && subjectsPerDay <= 8 && 
+                    totalSubjects >= 1 && 
+                    totalHours > 0) {
+                    submitButton.disabled = false;
+                } else {
+                    submitButton.disabled = true;
+                }
+            }
+            
+            // Update on input change
+            workingDaysInput.addEventListener('input', updateTotalHours);
+            subjectsPerDayInput.addEventListener('input', updateTotalHours);
+            document.querySelector('input[name="TotalSubjects"]').addEventListener('input', updateTotalHours);
+            
+            // Initial calculation
+            updateTotalHours();
+        });
+    </script>
+}

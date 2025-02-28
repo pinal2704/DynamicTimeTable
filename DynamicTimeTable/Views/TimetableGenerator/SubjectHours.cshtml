@@ -1,0 +1,96 @@
+﻿@model DynamicTimeTable.Models.SubjectHoursModel
+
+@{
+    ViewData["Title"] = "Subject Hours";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Enter Subject Hours</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <p>Total hours for the week: <strong>@Model.TotalHoursForWeek</strong></p>
+                        <p class="mb-0">Please enter the number of hours for each subject. The sum must equal the total hours for the week.</p>
+                    </div>
+
+                    <form asp-action="GenerateTimetable" method="post" id="subjectHoursForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="TotalHoursForWeek" />
+
+                        @for (int i = 0; i < Model.Subjects.Count; i++)
+                        {
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Subject Name</label>
+                                        <input asp-for="Subjects[i].Name" class="form-control" placeholder="Subject @(i+1)" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Hours</label>
+                                        <input asp-for="Subjects[i].Hours" class="form-control subject-hours" type="number" min="1" required />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="alert alert-warning mt-3" id="hoursSummary">
+                            Current total: <span id="currentHoursTotal">0</span> / @Model.TotalHoursForWeek hours
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" id="generateBtn" disabled>Generate Timetable</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hourInputs = document.querySelectorAll('.subject-hours');
+            const currentHoursTotalElement = document.getElementById('currentHoursTotal');
+            const totalHoursRequired = @Model.TotalHoursForWeek;
+            const generateButton = document.getElementById('generateBtn');
+            const hoursSummary = document.getElementById('hoursSummary');
+
+            function updateTotalHours() {
+                let currentTotal = 0;
+
+                hourInputs.forEach(input => {
+                    const hours = parseInt(input.value) || 0;
+                    currentTotal += hours;
+                });
+
+                currentHoursTotalElement.textContent = currentTotal;
+
+                if (currentTotal === totalHoursRequired) {
+                    generateButton.disabled = false;
+                    hoursSummary.className = 'alert alert-success mt-3';
+                } else if (currentTotal > totalHoursRequired) {
+                    generateButton.disabled = true;
+                    hoursSummary.className = 'alert alert-danger mt-3';
+                } else {
+                    generateButton.disabled = true;
+                    hoursSummary.className = 'alert alert-warning mt-3';
+                }
+            }
+
+            // Add event listeners to all hour inputs
+            hourInputs.forEach(input => {
+                input.addEventListener('input', updateTotalHours);
+            });
+
+            // Initial calculation
+            updateTotalHours();
+        });
+    </script>
+}

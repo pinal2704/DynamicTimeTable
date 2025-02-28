@@ -1,0 +1,62 @@
+﻿@model DynamicTimeTable.Models.TimetableModel
+
+@{
+    ViewData["Title"] = "Generated Timetable";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Generated Timetable</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Period</th>
+                                    @foreach (var day in Model.DayNames)
+                                    {
+                                        <th>@day</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int row = 0; row < Model.SubjectsPerDay; row++)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">Period @(row + 1)</td>
+                                        @for (int col = 0; col < Model.WorkingDays; col++)
+                                        {
+                                            <td>@Model.Timetable[row][col]</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-action="Index" class="btn btn-primary">Create New Timetable</a>
+                        <a asp-action="List" class="btn btn-secondary">View Saved Timetables</a>
+                        <button class="btn btn-success ms-2" id="printBtn">Print Timetable</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const printBtn = document.getElementById('printBtn');
+
+            printBtn.addEventListener('click', function() {
+                window.print();
+            });
+        });
+    </script>
+}
