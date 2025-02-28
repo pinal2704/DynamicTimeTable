@@ -175,36 +175,6 @@ namespace DynamicTimeTable.Controllers
             return View("GenerateTimetable", timetableModel);
         }
 
-        // GET: TimetableGenerator/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var timetableConfig = await _context.TimetableConfigurations
-                .FirstOrDefaultAsync(t => t.Id == id);
-
-            if (timetableConfig == null)
-            {
-                return NotFound();
-            }
-
-            return View(timetableConfig);
-        }
-
-        // POST: TimetableGenerator/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var timetableConfig = await _context.TimetableConfigurations.FindAsync(id);
-
-            if (timetableConfig != null)
-            {
-                _context.TimetableConfigurations.Remove(timetableConfig);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToAction(nameof(List));
-        }
-
     }
 
 }
